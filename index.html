@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Puesto — Burger's al Carbón</title>
+<meta name="description" content="El sabor original al carbón, directo a tu mesa. Ordena las mejores hamburguesas de la ciudad, ahora a un clic de distancia.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@600;800;900&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ===================== TOKENS ===================== */
+  :root{
+    --carbon: #121212;
+    --carbon-deep: #0b0b0b;
+    --card: #1e1e1e;
+    --card-line: #2c2c2c;
+    --yellow: #FFD700;
+    --yellow-dim: #d9b800;
+    --fire: #FF4500;
+    --fire-soft: #ff7a3d;
+    --white: #f5f5f5;
+    --gray: #b3b3b3;
+    --gray-dim: #7d7d7d;
+    
+    --display: 'Anton', sans-serif;
+    --heading: 'Montserrat', sans-serif;
+    --body: 'Open Sans', sans-serif;
+
+    --radius: 14px;
+    --shadow-fire: 0 10px 30px rgba(255,69,0,.25);
+    --shadow-yellow: 0 8px 24px rgba(255,215,0,.18);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--carbon);
+    color:var(--white);
+    font-family:var(--body);
+    line-height:1.5;
+    overflow-x:hidden;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 42px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 90px);
+  }
+  img{max-width:100%; display:block;}
+  a{color:inherit; text-decoration:none;}
+  ul{list-style:none;}
+  section{position:relative;}
+  .container{max-width:1180px; margin:0 auto; padding:0 20px;}
+  .eyebrow{
+    font-family:var(--heading); font-weight:800; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--fire); font-size:.78rem; margin-bottom:10px; display:inline-block;
+  }
+  h1,h2,h3{font-family:var(--display); letter-spacing:.5px; line-height:1.05;}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    font-family:var(--heading); font-weight:800; text-transform:uppercase; letter-spacing:.03em;
+    border-radius:999px; padding:16px 30px; font-size:.95rem; cursor:pointer; border:2px solid transparent;
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+    white-space:nowrap;
+  }
+  .btn:active{transform:scale(.97);}
+  .btn-primary{background:var(--yellow); color:#181200; box-shadow:var(--shadow-yellow);}
+  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 12px 30px rgba(255,215,0,.3);}
+  .btn-outline{border-color:var(--white); color:var(--white); background:transparent;}
+  .btn-outline:hover{border-color:var(--yellow); color:var(--yellow); transform:translateY(-2px);}
+  .btn-fire{background:linear-gradient(135deg, var(--fire), var(--fire-soft)); color:#fff; box-shadow:var(--shadow-fire);}
+  .btn-fire:hover{transform:translateY(-2px); box-shadow:0 14px 34px rgba(255,69,0,.4);}
+  .btn-sm{padding:9px 16px; font-size:.72rem; border-radius:999px;}
+
+  .reveal{opacity:0; transform:translateY(28px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in-view{opacity:1; transform:translateY(0);}
+
+  /* ===================== EMBERS (signature motif) ===================== */
+  .embers{position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:1;}
+  .ember{
+    position:absolute; bottom:-10px; width:6px; height:6px; border-radius:50%;
+    background:radial-gradient(circle, var(--yellow) 0%, var(--fire) 60%, transparent 75%);
+    opacity:0; filter:blur(.3px);
+    animation:rise linear infinite;
+  }
+  @keyframes rise{
+    0%{opacity:0; transform:translateY(0) translateX(0) scale(1);}
+    10%{opacity:.9;}
+    100%{opacity:0; transform:translateY(-420px) translateX(var(--drift,20px)) scale(.3);}
+  }
+
+  /* ===================== HEADER ===================== */
+  header{
+    position:sticky; top:0; z-index:100;
+    background:rgba(11,11,11,.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--card-line);
+    transition:padding .25s ease;
+  }
+  .nav-wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 20px; max-width:1180px; margin:0 auto;
+  }
+  .logo{display:flex; align-items:center; gap:10px; font-family:var(--display); font-size:1.35rem; color:var(--white);}
+  .logo img{height:42px; width:auto; border-radius:8px;}
+  .logo small{display:block; font-family:var(--heading); font-weight:600; font-size:.55rem; color:var(--gray); letter-spacing:.08em; text-transform:uppercase;}
+  nav.links{display:flex; gap:34px;}
+  nav.links a{
+    font-family:var(--heading); font-weight:700; font-size:.82rem; text-transform:uppercase; letter-spacing:.04em;
+    color:var(--gray); position:relative; padding:6px 0;
+  }
+  nav.links a::after{
+    content:''; position:absolute; left:0; bottom:0; height:2px; width:0; background:var(--yellow);
+    transition:width .25s ease;
+  }
+  nav.links a:hover{color:var(--white);}
+  nav.links a:hover::after{width:100%;}
+  .header-cta{display:flex; align-items:center; gap:14px;}
+  .burger-toggle{display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:6px;}
+  .burger-toggle span{width:24px; height:2px; background:var(--white); display:block;}
+  .mobile-panel{
+    display:none; flex-direction:column; gap:0; background:var(--carbon-deep);
+    border-top:1px solid var(--card-line);
+  }
+  .mobile-panel a{
+    padding:16px 20px; font-family:var(--heading); font-weight:700; text-transform:uppercase; font-size:.85rem;
+    border-bottom:1px solid var(--card-line); color:var(--gray);
+  }
+  .mobile-panel.open{display:flex;}
+
+  @media (max-width:900px){
+    nav.links{display:none;}
+    .header-cta .btn-primary{padding:11px 16px; font-size:.72rem;}
+    .burger-toggle{display:flex;}
+  }
+
+  /* ===================== HERO ===================== */
+  .hero{
+    min-height:92vh; display:flex; align-items:center; position:relative;
+    padding:120px 0 90px;
+    background:
+      radial-gradient(ellipse at 70% 20%, rgba(255,69,0,.18), transparent 55%),
+      radial-gradient(ellipse at 20% 80%, rgba(255,215,0,.08), transparent 50%),
+      linear-gradient(180deg, var(--carbon) 0%, var(--carbon-deep) 100%);
+    overflow:hidden;
+  }
+  .hero-grid{
+    display:grid; grid-template-columns:1.1fr .9fr; gap:50px; align-items:center; position:relative; z-index:2;
+  }
+  .hero h1{
+    font-size:clamp(2.6rem, 5.4vw, 4.6rem); color:var(--white); margin-bottom:22px;
+  }
+  .hero h1 span{color:var(--yellow);}
+  .hero h2{
+    font-family:var(--body); font-weight:400; font-size:1.15rem; color:var(--gray);
+    max-width:520px; margin-bottom:36px; line-height:1.6; letter-spacing:0;
+  }
+  .hero-actions{display:flex; gap:16px; flex-wrap:wrap;}
+  .hero-visual{
+    position:relative; aspect-ratio:1/1; border-radius:28px; overflow:hidden;
+    background:radial-gradient(circle at 50% 40%, #1b1b1b, #0a0a0a 70%);
+    border:1px solid var(--card-line);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .hero-visual img{width:70%; filter:drop-shadow(0 20px 40px rgba(0,0,0,.6));}
+  .smoke-ring{
+    position:absolute; inset:0; border-radius:28px;
+    box-shadow:inset 0 0 90px rgba(255,69,0,.15);
+  }
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr;}
+    .hero{padding:60px 0 60px; min-height:auto;}
+    .hero-visual{order:-1; max-width:300px; margin:0 auto 20px;}
+  }
+
+  /* ===================== SECTION HEAD ===================== */
+  .section-head{text-align:center; max-width:640px; margin:0 auto 50px;}
+  .section-head h2{font-size:clamp(2rem, 4vw, 2.8rem); color:var(--white);}
+  .section-head p{color:var(--gray); margin-top:14px; font-size:1.02rem;}
+
+  /* ===================== COMUNIDAD ===================== */
+  .comunidad{padding:100px 0; background:var(--carbon-deep);}
+  .comunidad-frame{
+    position:relative; border-radius:24px; overflow:hidden; border:1px solid var(--card-line);
+  }
+  .comunidad-frame img{width:100%; display:block; filter:brightness(.55);}
+  .comunidad-copy{
+    position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:center;
+    text-align:center; padding:40px; gap:18px;
+  }
+  .comunidad-copy .quote{
+    font-family:var(--heading); font-weight:800; font-style:italic; font-size:clamp(1.3rem,3.4vw,2.2rem);
+    color:var(--yellow); max-width:720px; line-height:1.3;
+  }
+  .comunidad-copy p{color:var(--white); font-size:1rem; max-width:480px;}
+
+  /* ===================== MENU ===================== */
+  .menu-section{padding:110px 0 90px;}
+  .tabs{display:flex; justify-content:center; gap:12px; margin-bottom:50px; flex-wrap:wrap;}
+  .tab-btn{
+    font-family:var(--heading); font-weight:700; text-transform:uppercase; font-size:.82rem;
+    padding:12px 24px; border-radius:999px; border:1px solid var(--card-line); background:transparent;
+    color:var(--gray); cursor:pointer; transition:all .2s ease;
+  }
+  .tab-btn.active{background:var(--yellow); color:#181200; border-color:var(--yellow);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+  .menu-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:24px;
+  }
+  .food-card{
+    background:var(--card); border:1px solid var(--card-line); border-radius:var(--radius);
+    padding:22px; display:flex; flex-direction:column; gap:12px;
+    transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+  }
+  .food-card:hover{transform:translateY(-6px); box-shadow:0 16px 30px rgba(0,0,0,.5), 0 0 0 1px rgba(255,215,0,.25); border-color:var(--yellow-dim);}
+  .food-thumb{
+    width:100%; aspect-ratio:1/1; border-radius:10px; background:linear-gradient(135deg,#232323,#141414);
+    display:flex; align-items:center; justify-content:center; color:var(--gray-dim); font-size:.72rem;
+    text-transform:uppercase; letter-spacing:.06em; font-family:var(--heading); font-weight:700; text-align:center; padding:10px;
+    border:1px dashed var(--card-line);
+  }
+  .food-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .food-top h3{font-family:var(--heading); font-weight:800; font-size:1.05rem; color:var(--white); text-transform:uppercase; letter-spacing:.01em;}
+  .food-price{font-family:var(--display); color:var(--yellow); font-size:1.15rem; white-space:nowrap;}
+  .food-card p{color:var(--gray); font-size:.86rem; flex:1;}
+  .food-card .btn{align-self:flex-start;}
+  .badge-gourmet{
+    display:inline-block; font-family:var(--heading); font-weight:800; font-size:.62rem; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--fire); border:1px solid var(--fire); padding:3px 8px; border-radius:6px; margin-bottom:2px;
+  }
+
+  /* ===================== RETO ===================== */
+  .reto{
+    padding:110px 0; position:relative; overflow:hidden;
+    background:
+      radial-gradient(circle at 15% 30%, rgba(255,69,0,.25), transparent 45%),
+      radial-gradient(circle at 85% 70%, rgba(255,215,0,.12), transparent 40%),
+      #0a0a0a;
+    border-top:1px solid var(--card-line); border-bottom:1px solid var(--card-line);
+  }
+  .reto-grid{display:grid; grid-template-columns:.9fr 1.1fr; gap:60px; align-items:center; position:relative; z-index:2;}
+  .reto-img{border-radius:20px; overflow:hidden; border:1px solid #2c2c2c; box-shadow:0 30px 60px rgba(0,0,0,.6);}
+  .reto h2{
+    font-size:clamp(2.4rem, 5vw, 3.6rem); color:var(--white); margin-bottom:6px;
+  }
+  .reto h2 .no-mams{color:var(--fire); -webkit-text-stroke:1px var(--yellow);}
+  .reto .lead{font-family:var(--heading); font-weight:800; color:var(--yellow); text-transform:uppercase; font-size:1rem; margin-bottom:18px; letter-spacing:.03em;}
+  .reto p.desc{color:var(--gray); margin-bottom:30px; max-width:480px;}
+  .reto-stats{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:34px;}
+  .reto-stat{
+    background:var(--card); border:1px solid var(--card-line); border-radius:14px; padding:18px;
+  }
+  .reto-stat .num{font-family:var(--display); color:var(--yellow); font-size:1.5rem; display:block;}
+  .reto-stat .label{color:var(--gray); font-size:.82rem;}
+  @media (max-width:900px){
+    .reto-grid{grid-template-columns:1fr;}
+  }
+
+  /* ===================== FOOTER ===================== */
+  footer{background:var(--carbon-deep); padding:90px 0 30px; border-top:1px solid var(--card-line);}
+  .footer-grid{
+    display:grid; grid-template-columns:1.1fr .9fr; gap:50px; margin-bottom:60px;
+  }
+  .footer-map{border-radius:16px; overflow:hidden; border:1px solid var(--card-line); min-height:320px;}
+  .footer-map iframe{width:100%; height:100%; min-height:320px; border:0; filter:grayscale(.3) invert(.92) contrast(.9);}
+  .footer-info h3{font-family:var(--heading); font-weight:800; color:var(--yellow); text-transform:uppercase; font-size:.95rem; letter-spacing:.05em; margin-bottom:10px;}
+  .footer-info p{color:var(--gray); margin-bottom:26px; font-size:.95rem;}
+  .footer-info .edit-note{font-size:.72rem; color:var(--gray-dim); font-style:italic;}
+  .socials{display:flex; gap:14px; margin-top:10px;}
+  .socials a{
+    width:42px; height:42px; border-radius:50%; border:1px solid var(--card-line);
+    display:flex; align-items:center; justify-content:center; transition:all .2s ease;
+  }
+  .socials a:hover{background:var(--yellow); border-color:var(--yellow);}
+  .socials a:hover svg{fill:#181200;}
+  .socials svg{width:19px; height:19px; fill:var(--white); transition:fill .2s ease;}
+  .footer-bottom{
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+    padding-top:26px; border-top:1px solid var(--card-line); color:var(--gray-dim); font-size:.8rem;
+  }
+  @media (max-width:900px){
+    .footer-grid{grid-template-columns:1fr;}
+  }
+
+  /* config note banner (visible only to the editor, remove freely) */
+  .dev-note{
+    background:#1a1400; color:var(--yellow); font-family:var(--body); font-size:.78rem;
+    text-align:center; padding:8px 16px; border-bottom:1px solid var(--card-line);
+  }
+</style>
+</head>
+<body>
+
+
+<!-- ===================== HEADER ===================== -->
+<header id="site-header">
+  <div class="nav-wrap">
+    <a href="#top" class="logo">
+      <img src="assets/logo-el-puesto.png" alt="El Puesto Burger's al Carbón">
+    </a>
+    <nav class="links">
+      <a href="#menu">Menú</a>
+      <a href="#reto">El Reto</a>
+      <a href="#nosotros">Nosotros</a>
+      <a href="#ubicacion">Ubicación</a>
+    </nav>
+    <div class="header-cta">
+      <a href="#" class="btn btn-primary btn-order">🍔 Pedir Ahora</a>
+      <button class="burger-toggle" id="burgerToggle" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-panel" id="mobilePanel">
+    <a href="#menu">Menú</a>
+    <a href="#reto">El Reto</a>
+    <a href="#nosotros">Nosotros</a>
+    <a href="#ubicacion">Ubicación</a>
+  </div>
+</header>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero" id="top">
+  <div class="embers" id="heroEmbers"></div>
+  <div class="container hero-grid">
+    <div class="reveal in-view">
+      <span class="eyebrow">Burger's al carbón · Since 2018</span>
+      <h1>El sabor <span>original</span> al carbón, directo a tu mesa.</h1>
+      <h2>Las mejores hamburguesas de la ciudad, ahora a un clic de distancia.</h2>
+      <div class="hero-actions">
+        <a href="#menu" class="btn btn-outline">Ver Menú</a>
+        <a href="#" class="btn btn-fire btn-order">Ordena por WhatsApp 🔥</a>
+      </div>
+    </div>
+    <div class="hero-visual reveal in-view">
+      <div class="smoke-ring"></div>
+      <img src="assets/logo-el-puesto.png" alt="Hamburguesa El Puesto">
+    </div>
+  </div>
+</section>
+
+<!-- ===================== COMUNIDAD ===================== -->
+<section class="comunidad" id="nosotros">
+  <div class="container">
+    <div class="comunidad-frame reveal">
+      <img src="assets/comunidad.png" alt="Familia y amigos disfrutando en El Puesto">
+      <div class="comunidad-copy">
+        <p class="quote">"</p>
+        <p></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MENU ===================== -->
+<section class="menu-section" id="menu">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Nuestro menú</span>
+      <h2>Hechas al carbón, a tu manera</h2>
+      <p>Elige tu clásica, atrévete con la línea gourmet o completa tu orden con nuestros extras.</p>
+    </div>
+
+    <div class="tabs reveal">
+      <button class="tab-btn active" data-tab="clasicas">Las Clásicas</button>
+      <button class="tab-btn" data-tab="gourmet">Línea Gourmet</button>
+      <button class="tab-btn" data-tab="extras">Extras</button>
+    </div>
+
+    <div class="tab-panel active" id="panel-clasicas"><div class="menu-grid" id="grid-clasicas"></div></div>
+    <div class="tab-panel" id="panel-gourmet"><div class="menu-grid" id="grid-gourmet"></div></div>
+    <div class="tab-panel" id="panel-extras"><div class="menu-grid" id="grid-extras"></div></div>
+  </div>
+</section>
+
+<!-- ===================== RETO NO MAM'S ===================== -->
+<section class="reto" id="reto">
+  <div class="embers" id="retoEmbers"></div>
+  <div class="container reto-grid">
+    <div class="reto-img reveal">
+      <img src="assets/reto-no-mams.png" alt="Reto No Mam's - Hamburguesa de 900g">
+    </div>
+    <div class="reveal">
+      <p class="lead">¿Tienes lo que se necesita?</p>
+      <h2>#RETO <span class="no-mams">NO MAM'S</span></h2>
+      <p class="desc">En 18 años, solo una persona lo ha logrado. La No Mam's: 900 gr de pura bestia. ¿Quién será el segundo?</p>
+      <div class="reto-stats">
+        <div class="reto-stat">
+          <span class="num">3 en 30 min</span>
+          <span class="label">Mural de la Fama</span>
+        </div>
+        <div class="reto-stat">
+          <span class="num">4 en 40 min</span>
+          <span class="label">Burgers gratis por 1 año</span>
+        </div>
+      </div>
+      <a href="#" class="btn btn-fire btn-order">Aceptar el Reto</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER / UBICACIÓN ===================== -->
+<footer id="ubicacion">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-map reveal">
+        <!-- Reemplaza el src del iframe con el embed real de tu ubicación en Google Maps -->
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3509.239907685401!2d-106.85536272480486!3d28.412016994060757!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x86c1cbbaa6b3ad6b%3A0x6203f5ac1eaa5022!2sEl%20Puesto%20Burgers%20Al%20Carbon!5e0!3m2!1ses-419!2smx!4v1783349476348!5m2!1ses-419!2smx"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="El Puesto Burgers Al Carbón"></iframe>
+      </div>
+      <div class="footer-info reveal">
+        <img src="assets/logo-el-puesto.png" alt="El Puesto" style="height:52px;width:auto;border-radius:8px;margin-bottom:22px;">
+
+        <h3>Dirección</h3>
+        <p>Revolución, San Antonio, Cuauhtémoc, Chihuahua <br><span class="edit-note">Enfrente del Polideportivo</span></p>
+
+        <h3>Horarios</h3>
+        <p>Lunes a Domingo: 12:00 pm – 12:00 am <br><span class="edit-note"</span></p>
+
+        <h3>Síguenos</h3>
+        <div class="socials">
+          <a href="#" aria-label="Facebook">
+            <svg viewBox="0 0 24 24"><path d="M13.5 21v-7.5h2.5l.5-3h-3V8.2c0-.87.24-1.46 1.49-1.46H16.5V4.14C16.06 4.1 14.9 4 13.55 4 10.73 4 8.8 5.71 8.8 8.87v1.63H6v3h2.8V21h4.7z"/></svg>
+          </a>
+          <a href="#" aria-label="Instagram">
+            <svg viewBox="0 0 24 24"><path d="M12 2.2c2.7 0 3 .01 4.1.06 1 .05 1.6.22 1.98.36.5.19.85.42 1.22.79.37.37.6.72.79 1.22.14.37.31.98.36 1.98.05 1.1.06 1.4.06 4.1s-.01 3-.06 4.1c-.05 1-.22 1.6-.36 1.98-.19.5-.42.85-.79 1.22-.37.37-.72.6-1.22.79-.37.14-.98.31-1.98.36-1.1.05-1.4.06-4.1.06s-3-.01-4.1-.06c-1-.05-1.6-.22-1.98-.36a3.3 3.3 0 0 1-1.22-.79 3.3 3.3 0 0 1-.79-1.22c-.14-.37-.31-.98-.36-1.98C2.81 15 2.8 14.7 2.8 12s.01-3 .06-4.1c.05-1 .22-1.6.36-1.98.19-.5.42-.85.79-1.22.37-.37.72-.6 1.22-.79.37-.14.98-.31 1.98-.36C8.4 3.51 8.7 3.5 11.4 3.5zM12 0C9.28 0 8.94.01 7.87.06 6.8.11 6.07.28 5.43.53c-.67.26-1.24.6-1.8 1.17-.57.56-.91 1.13-1.17 1.8-.25.64-.42 1.37-.47 2.44C1.94 7 1.93 7.34 1.93 10.07v3.86c0 2.73.01 3.07.06 4.13.05 1.07.22 1.8.47 2.44.26.67.6 1.24 1.17 1.8.56.57 1.13.91 1.8 1.17.64.25 1.37.42 2.44.47 1.07.05 1.41.06 4.13.06s3.07-.01 4.13-.06c1.07-.05 1.8-.22 2.44-.47.67-.26 1.24-.6 1.8-1.17.57-.56.91-1.13 1.17-1.8.25-.64.42-1.37.47-2.44.05-1.06.06-1.4.06-4.13v-3.86c0-2.73-.01-3.07-.06-4.13-.05-1.07-.22-1.8-.47-2.44a5.1 5.1 0 0 0-1.17-1.8A5.1 5.1 0 0 0 18.57.53C17.93.28 17.2.11 16.13.06 15.06.01 14.72 0 12 0z"/><circle cx="12" cy="12" r="3.2"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> El Puesto — Burger's al Carbón. Todos los derechos reservados.</span>
+      <span>Hecho con 🔥 y carbón.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ======= CONFIGURACIÓN =======
+  const WhatsApp = "https://wa.me/526252839304"; // <-- Reemplaza con el enlace real de tu Burger-Bot 1.0
+
+  document.querySelectorAll('.btn-order').forEach(btn=>{
+    btn.setAttribute('href', WhatsApp);
+    btn.setAttribute('target', '_blank');
+    btn.setAttribute('rel', 'noopener');
+  });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // ======= MOBILE MENU =======
+  const toggle = document.getElementById('burgerToggle');
+  const panel = document.getElementById('mobilePanel');
+  toggle.addEventListener('click', ()=> panel.classList.toggle('open'));
+  panel.querySelectorAll('a').forEach(a=> a.addEventListener('click', ()=> panel.classList.remove('open')));
+
+  // ======= SCROLL REVEAL =======
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in-view'); io.unobserve(e.target);} });
+  }, {threshold:.15});
+  revealEls.forEach(el=> io.observe(el));
+
+  // ======= HEADER SHADOW ON SCROLL =======
+  const header = document.getElementById('site-header');
+  window.addEventListener('scroll', ()=>{
+    header.style.boxShadow = window.scrollY > 30 ? '0 8px 24px rgba(0,0,0,.4)' : 'none';
+  });
+
+  // ======= EMBERS =======
+  function spawnEmbers(containerId, count){
+    const c = document.getElementById(containerId);
+    if(!c) return;
+    for(let i=0;i<count;i++){
+      const e = document.createElement('span');
+      e.className='ember';
+      const left = Math.random()*100;
+      const dur = 4 + Math.random()*5;
+      const delay = Math.random()*6;
+      const drift = (Math.random()*60-30)+'px';
+      e.style.left = left+'%';
+      e.style.setProperty('--drift', drift);
+      e.style.animationDuration = dur+'s';
+      e.style.animationDelay = delay+'s';
+      c.appendChild(e);
+    }
+  }
+  spawnEmbers('heroEmbers', 22);
+  spawnEmbers('retoEmbers', 26);
+
+  // ======= MENU DATA =======
+  const clasicas = [
+    {n:"Sencilla", p:70, d:"Carne, queso, lechuga, tomate, catsup y mayonesa."},
+    {n:"Especial", p:80, d:"Carne, queso, tocino, lechuga, tomate, catsup y mayonesa."},
+    {n:"Winnie Pooh", p:75, d:"Carne, queso, winnies, lechuga, tomate, catsup y mayonesa."},
+    {n:"Italiana", p:75, d:"Carne, queso, salami, lechuga, tomate, catsup y mayonesa."},
+    {n:"Hawaiana", p:85, d:"Carne, queso, piña, tocino, lechuga, catsup y mayonesa."},
+    {n:"Cherrys", p:85, d:"Carne, queso, cerezas, piña, lechuga, catsup y mayonesa."},
+    {n:"Europea", p:85, d:"Carne, queso, tocino, champiñones, lechuga, tomate, catsup y mayonesa."},
+    {n:"Vaquera", p:85, d:"Carne, queso, tocino, cebolla asada, salsa BBQ, lechuga y mayonesa."},
+    {n:"Super", p:90, d:"Carne, queso, tocino, aguacate, lechuga, tomate, catsup y mayonesa."},
+    {n:"Ranchera", p:90, d:"Carne, queso, tocino, salchicha para asar, lechuga, tomate, catsup y mayonesa."},
+    {n:"La del Chavo", p:90, d:"Carne, queso, aguacate, 100gr de jamón a la parrilla, lechuga, tomate, catsup y mayonesa."},
+    {n:"Argentina", p:90, d:"Carne, queso, chorizo argentino, cebolla asada, lechuga, tomate, catsup y mayonesa."},
+    {n:"Norteña", p:90, d:"Carne, queso, aguacate, 100gr de salchicha a la parrilla, lechuga, tomate, catsup y mayonesa."},
+    {n:"Polaka", p:90, d:"Pechuga de pollo, queso, chilaca, lechuga, tomate, catsup y mayonesa."},
+    {n:"Española", p:90, d:"Pechuga de pollo, queso, champiñones, chipotle, lechuga, tomate, catsup y mayonesa."},
+    {n:"Arrachera", p:90, d:"Arrachera, queso, cebolla asada, aguacate, lechuga, tomate, catsup y mayonesa."},
+    {n:"Monterrey", p:90, d:"Carne, carne asada, queso amarillo, lechuga, tomate y mayonesa."},
+    {n:"Philadelphia", p:90, d:"Carne, queso, philadelphia, jalapeño, espinacas, aros de cebolla y mayonesa."},
+    {n:"Big Mama", p:140, d:"2 carnes de res, jamón, 1 pechuga de pollo, 3 quesos, champiñones, cebolla asada, piña, tocino, lechuga, tomate, catsup y mayonesa.", tag:"La No Mam's"}
+  ];
+
+  const gourmet = [
+    {n:"Picanha", p:250, d:"220 gr de picanha con receta de la casa, queso gourmet y chimichurri. Incluye ensalada y papas de gajo."},
+    {n:"Aguja Norteña", p:250, d:"220 gr de aguja norteña con receta de la casa, queso gourmet y salsa macha. Incluye ensalada y papas de gajo."},
+    {n:"Rib Eye", p:250, d:"220 gr de rib eye con receta de la casa, queso gourmet y salsa tatemada de habanero y piña. Incluye ensalada y papas de gajo."}
+  ];
+
+  const extras = [
+    {n:"Papas a la Francesa", p:55, d:"Porción clásica, crujiente y doradita."},
+    {n:"Papas con Queso Amarillo", p:65, d:"Bañadas en queso amarillo derretido."},
+    {n:"Papas Waffle", p:65, d:"Corte waffle, extra crujientes."},
+    {n:"Aros de Cebolla", p:55, d:"Empanizados y fritos al punto."},
+    {n:"Carne Extra 120gr", p:25, d:"Súmale una carne extra a tu burger."},
+    {n:"Pechuga Extra", p:25, d:"Porción extra de pechuga a la parrilla."},
+    {n:"Ingrediente Extra", p:20, d:"Agrega tu ingrediente favorito."},
+    {n:"Agua de Sabor 500ml", p:30, d:"Refrescante y natural."},
+    {n:"Refresco 355ml", p:30, d:"Bien fría, para acompañar tu burger."}
+  ];
+
+  function renderCards(items, gridId){
+    const grid = document.getElementById(gridId);
+    grid.innerHTML = items.map(it => `
+      <article class="food-card">
+        <div class="food-thumb">Foto de<br>${it.n}</div>
+        <div class="food-top">
+          <div>
+            ${it.tag ? `<span class="badge-gourmet">${it.tag}</span><br>`:''}
+            <h3>${it.n}</h3>
+          </div>
+          <span class="food-price">$${it.p}</span>
+        </div>
+        <p>${it.d}</p>
+        <a href="#" class="btn btn-primary btn-sm btn-order">Agregar al pedido</a>
+      </article>
+    `).join('');
+    // re-bind newly created order buttons
+    grid.querySelectorAll('.btn-order').forEach(btn=>{
+      btn.setAttribute('href', WhatsApp);
+      btn.setAttribute('target', '_blank');
+      btn.setAttribute('rel', 'noopener');
+    });
+  }
+  renderCards(clasicas, 'grid-clasicas');
+  renderCards(gourmet, 'grid-gourmet');
+  renderCards(extras, 'grid-extras');
+
+  // ======= TABS =======
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ======= REDUCED MOTION =======
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    document.querySelectorAll('.ember').forEach(e=> e.style.animation='none');
+    document.querySelectorAll('.reveal').forEach(e=> e.classList.add('in-view'));
+  }
+</script>
+</body>
+</html>
